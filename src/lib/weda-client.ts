@@ -64,6 +64,46 @@ function createGlboalApi() {
       },
     }
   );
+// Override navigation helpers to work with react-router history (supports per-country routes like us/solutions)
+try {
+  const qs = (params: any) => {
+    const s = new URLSearchParams();
+    Object.entries(params || {}).forEach(([k, v]) => {
+      if (v === undefined || v === null) return;
+      s.set(k, String(v));
+    });
+    const out = s.toString();
+    return out ? `?${out}` : '';
+  };
+  (globalAPI as any).utils = (globalAPI as any).utils || {};
+  (globalAPI as any).utils.navigateTo = (arg: any) => {
+    const history = (window as any)._WEAPPS_HISTORY;
+    let path = '';
+    if (typeof arg === 'string') {
+      path = arg;
+    } else if (arg && typeof arg === 'object') {
+      const pageId = arg.pageId || arg.id || '';
+      path = `/${pageId}${qs(arg.params)}`;
+    }
+    if (!path) return;
+    if (history && typeof history.push === 'function') {
+      history.push(path);
+    } else {
+      window.location.href = path;
+    }
+  };
+  (globalAPI as any).utils.navigateBack = () => {
+    const history = (window as any)._WEAPPS_HISTORY;
+    if (history && typeof history.back === 'function') {
+      history.back();
+    } else {
+      window.history.back();
+    }
+  };
+} catch (e) {
+  // ignore
+}
+
   _injectApp2Runtime(globalAPI);
 
   return globalAPI;

@@ -5,9 +5,9 @@ import { Shield, AlertTriangle, FileText, Scale, ArrowRight } from 'lucide-react
 // @ts-ignore;
 import { useToast } from '@/components/ui';
 
-// Locale switch (set VITE_LOCALE=US)
-const LOCALE = (import.meta?.env?.VITE_LOCALE || 'CN').toString();
-const isUS = /us/i.test(LOCALE);
+
+// Fixed locale (separate per-country pages; no i18n)
+const isUS = true;
 const T = (cn, en) => (isUS ? en : cn);
 
 
@@ -38,7 +38,7 @@ export default function Home(props) {
             </div>
           </div>
           <div className="text-right hidden sm:block">
-            <p className="text-xs text-slate-400">{T('今天','Today')}</p>
+            <p className="text-xs text-slate-400">{'Today'}</p>
             <p className="text-sm font-semibold">{dateLabel}</p>
           </div>
         </div>
@@ -58,7 +58,7 @@ export default function Home(props) {
                 Practical, low-conflict guidance for dealing with debt collection. We help you document, respond calmly, and reduce risk.
                 Not legal advice. For legal advice, consult a licensed attorney.
               </p>
-              <button onClick={() => handleNavigate('assessment')} className="bg-[#F59E0B] hover:bg-[#D97706] text-white px-6 md:px-8 py-3 md:py-4 rounded-lg font-semibold text-base md:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2 md:gap-3">
+              <button onClick={() => handleNavigate('us/assessment')} className="bg-[#F59E0B] hover:bg-[#D97706] text-white px-6 md:px-8 py-3 md:py-4 rounded-lg font-semibold text-base md:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2 md:gap-3">
                 Start Risk Assessment
                 <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
               </button>
@@ -85,7 +85,7 @@ export default function Home(props) {
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {/* Feature 1 */}
-            <div onClick={() => handleNavigate('assessment')} className="bg-white rounded-xl p-4 md:p-6 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer border-l-4 border-[#F59E0B] hover:-translate-y-2">
+            <div onClick={() => handleNavigate('us/assessment')} className="bg-white rounded-xl p-4 md:p-6 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer border-l-4 border-[#F59E0B] hover:-translate-y-2">
               <div className="bg-[#F59E0B]/10 w-12 h-12 md:w-14 md:h-14 rounded-lg flex items-center justify-center mb-3 md:mb-4">
                 <AlertTriangle className="w-6 h-6 md:w-7 md:h-7 text-[#F59E0B]" />
               </div>
@@ -98,7 +98,7 @@ export default function Home(props) {
             </div>
 
             {/* Feature 2 */}
-            <div onClick={() => handleNavigate('solutions')} className="bg-white rounded-xl p-4 md:p-6 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer border-l-4 border-[#10B981] hover:-translate-y-2">
+            <div onClick={() => handleNavigate('us/solutions')} className="bg-white rounded-xl p-4 md:p-6 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer border-l-4 border-[#10B981] hover:-translate-y-2">
               <div className="bg-[#10B981]/10 w-12 h-12 md:w-14 md:h-14 rounded-lg flex items-center justify-center mb-3 md:mb-4">
                 <FileText className="w-6 h-6 md:w-7 md:h-7 text-[#10B981]" />
               </div>
@@ -111,7 +111,7 @@ export default function Home(props) {
             </div>
 
             {/* Feature 3 */}
-            <div onClick={() => handleNavigate('knowledge')} className="bg-white rounded-xl p-4 md:p-6 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer border-l-4 border-[#1E3A5F] hover:-translate-y-2">
+            <div onClick={() => handleNavigate('us/knowledge')} className="bg-white rounded-xl p-4 md:p-6 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer border-l-4 border-[#1E3A5F] hover:-translate-y-2">
               <div className="bg-[#1E3A5F]/10 w-12 h-12 md:w-14 md:h-14 rounded-lg flex items-center justify-center mb-3 md:mb-4">
                 <Scale className="w-6 h-6 md:w-7 md:h-7 text-[#1E3A5F]" />
               </div>
@@ -151,27 +151,36 @@ export default function Home(props) {
               <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
               <div className="text-sm md:text-base text-[#64748B]">
                 <p className="font-semibold mb-2 text-red-600">Watch out for “pay a little to make it go away” pressure:</p>
-                <p className="mb-2">{T('1）还一部分钱并不能解决债务问题，剩余债务仍需继续偿还','1) A small payment may not resolve the debt—remaining balance can still be collected.')}</p>
-                <p className="mb-2">{T('2）催收人员可能为了完成业绩而诱导还款，还款后仍会继续催收','2) Collectors may push partial payments; collection can continue afterward.')}</p>
-                <p className="mb-2">{T('3）部分还款可能被视为承认债务，反而加强债权人的追索力度','3) In some cases, a payment can be treated as acknowledging the debt and may affect the statute of limitations.')}</p>
-                <p className="mb-2">{T('4）如需还款，应通过银行官方渠道，并要求出具书面还款协议','4) If you pay, use official channels and request written confirmation/receipts.')}</p>
-                <p>{T('5）任何还款建议应先咨询执业律师，确认还款的合法性和必要性','5) For legal implications, consult a licensed attorney in your state.')}</p>
+                <p className="mb-2">{'1) A small payment may not resolve the debt—remaining balance can still be collected.'}</p>
+                <p className="mb-2">{'2) Collectors may push partial payments; collection can continue afterward.'}</p>
+                <p className="mb-2">{'3) In some cases, a payment can be treated as acknowledging the debt and may affect the statute of limitations.'}</p>
+                <p className="mb-2">{'4) If you pay, use official channels and request written confirmation/receipts.'}</p>
+                <p>{'5) For legal implications, consult a licensed attorney in your state.'}</p>
               </div>
             </div>
             <div className="flex items-start gap-3 sm:col-span-2">
               <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
               <div className="text-sm md:text-base text-[#64748B]">
                 <p className="font-semibold mb-2">How to verify a third-party agreement:</p>
-                <p className="mb-2">{T('1）核实第三方资质：通过国家企业信用信息公示系统查询企业注册信息，确认是否具备合法经营资质','1) Verify the company: check state business registries and reviews; confirm a physical address and license where applicable.')}</p>
-                <p className="mb-2">{T('2）检查协议关键条款：仔细阅读协议中的费用标准、违约责任、解约条件等条款，确认是否公平合理','2) Review key terms: fees, cancellation/refund, dispute resolution, and what outcomes are (and are not) promised.')}</p>
-                <p className="mb-2">{T('3）验证银行官方渠道：通过银行官网、客服热线或线下网点核实协议是否为银行官方出具','3) Verify with the creditor: contact official customer support to confirm any “agreement” is recognized.')}</p>
-                <p className="mb-2">{T('4）咨询专业机构：将协议文本提交给执业律师或金融监管部门进行合法性审查','4) Get a second opinion: ask a licensed attorney or a reputable nonprofit credit counselor to review it.')}</p>
-                <p>{T('5）保留完整证据：保存所有沟通记录、协议文本、付款凭证等，以备后续维权使用','5) Keep records: save emails, call logs, contracts, and payment receipts.')}</p>
+                <p className="mb-2">{'1) Verify the company: check state business registries and reviews; confirm a physical address and license where applicable.'}</p>
+                <p className="mb-2">{'2) Review key terms: fees, cancellation/refund, dispute resolution, and what outcomes are (and are not) promised.'}</p>
+                <p className="mb-2">{'3) Verify with the creditor: contact official customer support to confirm any “agreement” is recognized.'}</p>
+                <p className="mb-2">{'4) Get a second opinion: ask a licensed attorney or a reputable nonprofit credit counselor to review it.'}</p>
+                <p>{'5) Keep records: save emails, call logs, contracts, and payment receipts.'}</p>
               </div>
             </div>
           </div>
         </div>
-      </main>
+      
+      <footer className="mt-12 border-t pt-4 text-xs text-[#64748B]">
+        <h4 className="font-semibold mb-1">About This Tool (Free Use Statement)</h4>
+        <p>This tool is a free public risk-awareness resource to help identify potentially improper debt-collection practices.</p>
+        <p className="mt-1">It is free to use and does not require payment or registration. Information provided is general only and not legal advice.</p>
+        <p className="mt-1">The project may receive transparent institutional or public-interest support without affecting content independence or using user data.</p>
+        <p className="mt-1">This tool does not store or track individual assessment results.</p>
+      </footer>
+    
+    </main>
 
       {/* Footer */}
       <footer className="bg-[#1E3A5F] text-white py-6 md:py-8 mt-12 md:mt-16">

@@ -5,11 +5,9 @@ import { ArrowLeft, AlertTriangle, AlertCircle, Info, Shield, CheckCircle } from
 // @ts-ignore;
 import { useToast, Button, Card } from '@/components/ui';
 
-// Locale switch (set VITE_LOCALE=US)
-const LOCALE = (import.meta?.env?.VITE_LOCALE || 'CN').toString();
-const isUS = /us/i.test(LOCALE);
-const T = (cn, en) => (isUS ? en : cn);
 
+// Fixed locale (separate per-country pages; no i18n)
+const isUS = true;
 
 export default function RiskWarning(props) {
   const {
@@ -26,12 +24,12 @@ export default function RiskWarning(props) {
           <div className="flex items-center gap-2 md:gap-3">
             <button onClick={navigateBack} className="flex items-center gap-2 hover:bg-white/10 px-2 md:px-3 py-2 rounded-lg transition-colors">
               <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
-              <span className="text-sm md:text-base">{T('返回','Back')}</span>
+              <span className="text-sm md:text-base">{'Back'}</span>
             </button>
           </div>
           <div className="flex items-center gap-2 md:gap-3">
             <AlertTriangle className="w-6 h-6 md:w-8 md:h-8 text-[#F59E0B]" />
-            <span className="text-lg md:text-xl font-bold font-['Space_Grotesk']">{T('风险提示','Risk notice')}</span>
+            <span className="text-lg md:text-xl font-bold font-['Space_Grotesk']">{'Risk notice'}</span>
           </div>
           <div className="w-12 md:w-20"></div>
         </div>
@@ -45,10 +43,10 @@ export default function RiskWarning(props) {
             <AlertCircle className="w-5 h-5 md:w-6 md:h-6 text-amber-600 flex-shrink-0 mt-1" />
             <div className="flex-1">
               <h2 className="text-base md:text-lg font-bold font-['Space_Grotesk'] text-amber-700 mb-2">
-                {T('风险提示｜关于"债务清算/债务协商代理"的常见风险','Risk notice: common risks of “debt settlement / negotiation agencies”')}
+                {'Risk notice: common risks of “debt settlement / negotiation agencies”'}
               </h2>
               <p className="text-xs md:text-sm text-amber-600 leading-relaxed">
-                {T('请注意：目前市场上存在以"债务清算""债务优化""停息挂账代理"等名义提供服务的机构或个人，其中部分存在较高风险。','Note: Some services marketed as “debt settlement”, “debt optimization”, or “negotiation agents” may carry significant risk.')}
+                {'Note: Some services marketed as “debt settlement”, “debt optimization”, or “negotiation agents” may carry significant risk.'}
               </p>
             </div>
           </div>
@@ -59,11 +57,11 @@ export default function RiskWarning(props) {
           <div className="flex items-center gap-2 mb-3 md:mb-4">
             <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-amber-600" />
             <h3 className="text-base md:text-lg font-bold font-['Space_Grotesk'] text-amber-700">
-              {T('常见风险信号','Common red flags')}
+              {'Common red flags'}
             </h3>
           </div>
           <ul className="space-y-2 md:space-y-3">
-            {(isUS ? ['Ask for upfront fees or deposits', 'Promise “guaranteed success” or “inside channels”', 'Request sensitive info (ID/SSN, bank details, verification codes)', 'Ask you to transfer money to a personal account or non-official channel'] : ['要求提前支付服务费、保证金', '承诺"包成功""内部渠道""无需本人参与"', '要求提供身份证、银行卡、验证码等敏感信息', '要求通过个人账户或非官方渠道转账']).map((item, index) => <li key={index} className="flex items-start gap-2 text-xs md:text-sm text-amber-600">
+            {['Ask for upfront fees or deposits', 'Promise “guaranteed success” or “inside channels”', 'Request sensitive info (ID/SSN, bank details, verification codes)', 'Ask you to transfer money to a personal account or non-official channel'].map((item, index) => <li key={index} className="flex items-start gap-2 text-xs md:text-sm text-amber-600">
                 <span className="text-amber-500 mt-1 flex-shrink-0">•</span>
                 <span className="leading-relaxed">{item}</span>
               </li>)}
@@ -75,11 +73,11 @@ export default function RiskWarning(props) {
           <div className="flex items-center gap-2 mb-3 md:mb-4">
             <Info className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
             <h3 className="text-base md:text-lg font-bold font-['Space_Grotesk'] text-blue-700">
-              建议
+              Recommendations
             </h3>
           </div>
           <ul className="space-y-2 md:space-y-3">
-            {(isUS ? ['Start with the original creditor’s official channels', 'Be cautious with third-party agents or brokers'] : ['优先通过原债权机构的官方渠道了解协商政策', '谨慎对待第三方代理或中介服务']).map((item, index) => <li key={index} className="flex items-start gap-2 text-xs md:text-sm text-blue-600">
+            {['Start with the original creditor’s official channels', 'Be cautious with third-party agents or brokers'].map((item, index) => <li key={index} className="flex items-start gap-2 text-xs md:text-sm text-blue-600">
                 <span className="text-blue-500 mt-1 flex-shrink-0">•</span>
                 <span className="leading-relaxed">{item}</span>
               </li>)}
@@ -92,20 +90,20 @@ export default function RiskWarning(props) {
             <Shield className="w-5 h-5 md:w-6 md:h-6 text-blue-600 flex-shrink-0 mt-1" />
             <div className="flex-1">
               <h3 className="text-base md:text-lg font-bold font-['Space_Grotesk'] text-blue-700 mb-2">
-                {T('重要提示','Important')}
+                {'Important'}
               </h3>
               <ul className="text-xs md:text-sm text-blue-600 space-y-2 md:space-y-3">
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-3 h-3 md:w-4 md:h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span>{T('本产品不提供代理服务，也不收取协商相关费用','This product does not provide agency services and does not charge negotiation-related fees.')}</span>
+                  <span>{'This product does not provide agency services and does not charge negotiation-related fees.'}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-3 h-3 md:w-4 md:h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span>{T('所有信息均为一般性指引，不构成法律意见或结果保证','All information is general guidance and not legal advice or a guarantee of outcome.')}</span>
+                  <span>{'All information is general guidance and not legal advice or a guarantee of outcome.'}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-3 h-3 md:w-4 md:h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span>{T('如需专业法律建议，请咨询执业律师','For legal advice, consult a licensed attorney in your jurisdiction.')}</span>
+                  <span>{'For legal advice, consult a licensed attorney in your jurisdiction.'}</span>
                 </li>
               </ul>
             </div>
@@ -116,7 +114,7 @@ export default function RiskWarning(props) {
         <Card className="bg-slate-50 border-2 border-slate-200 rounded-xl p-4 md:p-6 mb-6 md:mb-8">
           <div className="text-center">
             <p className="text-xs md:text-sm text-slate-600 font-medium">
-              {T('⚠️ 本产品仅提供一般性信息，不构成法律意见或结果保证','⚠️ This product provides general information only and is not legal advice or a guarantee of outcome.')}
+              {'⚠️ This product provides general information only and is not legal advice or a guarantee of outcome.'}
             </p>
           </div>
         </Card>
@@ -124,12 +122,12 @@ export default function RiskWarning(props) {
         {/* Action Buttons */}
         <div className="flex gap-3 md:gap-4">
           <Button onClick={navigateBack} variant="outline" className="flex-1 text-xs md:text-sm">
-            {T('返回评估结果','Back to results')}
+            {'Back to results'}
           </Button>
           <Button onClick={() => navigateTo({
-          pageId: 'solutions'
+          pageId: 'us/solutions'
         })} className="flex-1 bg-[#1E3A5F] hover:bg-[#0F2744] text-xs md:text-sm">
-            {T('查看应对方案','View solutions')}
+            {'View solutions'}
           </Button>
         </div>
       </main>

@@ -5,39 +5,45 @@ import { ArrowLeft, Scale, FileText, AlertTriangle, AlertCircle, Info, Shield } 
 // @ts-ignore;
 import { useToast, Button, Card } from '@/components/ui';
 
-// Locale switch (set VITE_LOCALE=US)
-const LOCALE = (import.meta?.env?.VITE_LOCALE || 'CN').toString();
-const isUS = /us/i.test(LOCALE);
+
+// Fixed locale (separate per-country pages; no i18n)
+const isUS = false;
 const T = (cn, en) => (isUS ? en : cn);
 
 
 export default function IllegalCollection(props) {
-  const {
-    toast
-  } = useToast();
-  const {
-    navigateBack,
-    navigateTo
-  } = props.$w.utils;
-  const {
-    illegalBehaviors
-  } = props.$w.page.dataset.params;
+  const { toast } = useToast();
+  const utils = props.$w?.utils || props.$w?.page?.utils || {};
+  const navigateTo = utils.navigateTo || ((arg) => {
+    if (typeof arg === 'string') window.location.href = arg;
+  });
+  const navigateBack = utils.navigateBack || (() => window.history.back());
 
-  // 解析违法行为数据
-  const behaviors = illegalBehaviors ? JSON.parse(decodeURIComponent(illegalBehaviors)) : [];
-  return <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 font-['JetBrains_Mono']">
+  // 严格模式：详情必须严格等于本次评估命中项；不通过 URL 传递（避免 URL 过长）。
+  // assessment 页面在跳转前把命中项写入 sessionStorage。
+  let behaviors = [];
+  if (typeof window !== 'undefined') {
+    try {
+      const raw = sessionStorage.getItem('illegal_behaviors_cn_current');
+      behaviors = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(behaviors)) behaviors = [];
+    } catch {
+      behaviors = [];
+    }
+  }
+return <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 font-['JetBrains_Mono']">
       {/* Header */}
       <header className="bg-[#1E3A5F] text-white py-3 md:py-4 px-4 md:px-8 shadow-lg">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2 md:gap-3">
             <button onClick={navigateBack} className="flex items-center gap-2 hover:bg-white/10 px-2 md:px-3 py-2 rounded-lg transition-colors">
               <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
-              <span className="text-sm md:text-base">{T('返回','Back')}</span>
+              <span className="text-sm md:text-base">{'返回'}</span>
             </button>
           </div>
           <div className="flex items-center gap-2 md:gap-3">
             <Scale className="w-6 h-6 md:w-8 md:h-8 text-[#F59E0B]" />
-            <span className="text-lg md:text-xl font-bold font-['Space_Grotesk']">{T('违法催收行为','Potentially unlawful collection')}</span>
+            <span onClick={() => navigateTo({ pageId: 'cn/home' })} role="button" tabIndex={0} className="text-lg md:text-xl font-bold font-['Space_Grotesk'] hover:opacity-80 cursor-pointer">{'违法催收行为'}</span>
           </div>
           <div className="w-12 md:w-20"></div>
         </div>
@@ -51,10 +57,10 @@ export default function IllegalCollection(props) {
             <AlertTriangle className="w-5 h-5 md:w-6 md:h-6 text-red-600 flex-shrink-0 mt-1" />
             <div className="flex-1">
               <h2 className="text-base md:text-lg font-bold font-['Space_Grotesk'] text-red-700 mb-2">
-                {T('检测到可能的违法催收行为','Potentially unlawful collection detected')}
+                {'检测到可能的违法催收行为'}
               </h2>
               <p className="text-xs md:text-sm text-red-600 leading-relaxed">
-                {T('根据您提供的信息，以下催收方式可能违反相关法律法规，请注意保护自身权益。','Based on what you selected, the items below may be improper or unlawful. Keep records and protect your rights.')}
+                {'根据您提供的信息，以下催收方式可能违反相关法律法规，请注意保护自身权益。'}
               </p>
             </div>
           </div>
@@ -79,7 +85,7 @@ export default function IllegalCollection(props) {
                 <div className="bg-red-50 rounded-lg p-3 md:p-4 mb-3 md:mb-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Scale className="w-3 h-3 md:w-4 md:h-4 text-red-600" />
-                    <p className="text-xs md:text-sm text-red-700 font-semibold">{T('法律依据：','Reference:')}</p>
+                    <p className="text-xs md:text-sm text-red-700 font-semibold">{'法律依据：'}</p>
                   </div>
                   <p className="text-xs md:text-sm text-red-600 leading-relaxed">
                     {behavior.law}
@@ -90,7 +96,7 @@ export default function IllegalCollection(props) {
                 <div className="bg-amber-50 rounded-lg p-3 md:p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <AlertCircle className="w-3 h-3 md:w-4 md:h-4 text-amber-600" />
-                    <p className="text-xs md:text-sm text-amber-700 font-semibold">{T('处理方法：','What to do:')}</p>
+                    <p className="text-xs md:text-sm text-amber-700 font-semibold">{'处理方法：'}</p>
                   </div>
                   <p className="text-xs md:text-sm text-amber-600 leading-relaxed whitespace-pre-line">
                     {behavior.handlingMethod}
@@ -100,10 +106,10 @@ export default function IllegalCollection(props) {
               <div className="text-center py-8 md:py-12">
                 <Shield className="w-12 h-12 md:w-16 md:h-16 text-green-600 mx-auto mb-4" />
                 <h3 className="text-lg md:text-xl font-bold font-['Space_Grotesk'] text-[#1E3A5F] mb-2">
-                  {T('未检测到违法催收行为','No obvious unlawful behavior detected')}
+                  {'未检测到违法催收行为'}
                 </h3>
                 <p className="text-xs md:text-sm text-[#64748B]">
-                  {T('根据您的评估结果，未发现明显的违法催收行为。','Based on your assessment, we did not flag any obvious unlawful behavior.')}
+                  {'根据您的评估结果，未发现明显的违法催收行为。'}
                 </p>
               </div>
             </Card>}
@@ -115,28 +121,28 @@ export default function IllegalCollection(props) {
               <Info className="w-5 h-5 md:w-6 md:h-6 text-blue-600 flex-shrink-0 mt-1" />
               <div className="flex-1">
                 <h3 className="text-base md:text-lg font-bold font-['Space_Grotesk'] text-blue-700 mb-2">
-                  {T('建议采取以下措施','General recommendations')}
+                  {'建议采取以下措施'}
                 </h3>
               </div>
             </div>
             <ul className="text-xs md:text-sm text-blue-600 space-y-2 md:space-y-3 list-disc list-inside">
-              <li>{T('保留所有违法催收的证据（通话录音、短信截图等）','Save evidence (call recordings, screenshots, emails, etc.).')}</li>
-              <li>{T('优先与债权银行沟通：首先联系债权银行的官方客服，说明催收人员的违规行为，要求更换催收人员或调整催收方式','Start with the original creditor: contact official customer support, report the conduct, and request that communications follow policy.')}</li>
-              <li>{T('如银行不予处理，再向监管部门投诉（银保监会、地方金融监管局）','If unresolved, file a complaint with the appropriate regulator (e.g., CFPB/FTC/state AG in the U.S.).')}</li>
-              <li>{T('如情节严重，可向公安机关报案','If you feel unsafe or there are threats/impersonation, contact local law enforcement.')}</li>
-              <li>{T('咨询专业律师，了解维权途径','Consider speaking with a qualified attorney or a consumer credit counselor.')}</li>
+              <li>{'保留所有违法催收的证据（通话录音、短信截图等）'}</li>
+              <li>{'优先与债权银行沟通：首先联系债权银行的官方客服，说明催收人员的违规行为，要求更换催收人员或调整催收方式'}</li>
+              <li>{'如银行不予处理，再向监管部门投诉（银保监会、地方金融监管局）'}</li>
+              <li>{'如情节严重，可向公安机关报案'}</li>
+              <li>{'咨询专业律师，了解维权途径'}</li>
             </ul>
           </Card>}
 
         {/* Action Buttons */}
         <div className="flex gap-3 md:gap-4 mt-6 md:mt-8">
           <Button onClick={navigateBack} variant="outline" className="flex-1 text-xs md:text-sm">
-            {T('返回评估结果','Back to results')}
+            {'返回评估结果'}
           </Button>
           <Button onClick={() => navigateTo({
-          pageId: 'solutions'
+          pageId: 'cn/solutions'
         })} className="flex-1 bg-[#1E3A5F] hover:bg-[#0F2744] text-xs md:text-sm">
-            {T('查看应对方案','View solutions')}
+            {'查看应对方案'}
           </Button>
         </div>
       </main>

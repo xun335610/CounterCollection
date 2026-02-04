@@ -5,9 +5,9 @@ import { ArrowLeft, Scale, BookOpen, Search, ChevronRight, ExternalLink } from '
 // @ts-ignore;
 import { useToast, Button, Card, Input } from '@/components/ui';
 
-// Locale switch (set VITE_LOCALE=US)
-const LOCALE = (import.meta?.env?.VITE_LOCALE || 'CN').toString();
-const isUS = /us/i.test(LOCALE);
+
+// Fixed locale (separate per-country pages; no i18n)
+const isUS = false;
 const T = (cn, en) => (isUS ? en : cn);
 
 
@@ -1579,7 +1579,7 @@ Be cautious with firms that:
           </div>
           <div className="flex items-center gap-3">
             <Scale className="w-8 h-8 text-[#F59E0B]" />
-            <span className="text-xl font-bold font-['Space_Grotesk']">法律{T('知识库','Knowledge')}</span>
+            <span className="text-xl font-bold font-['Space_Grotesk']">法律{'知识库'}</span>
           </div>
           <div className="w-20"></div>
         </div>

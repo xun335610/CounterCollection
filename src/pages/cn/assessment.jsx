@@ -4,11 +4,12 @@ import React, { useState } from 'react';
 import { ArrowLeft, AlertTriangle, Shield, CheckCircle, XCircle, ChevronRight, Plus, Scale, FileText, AlertCircle, Info } from 'lucide-react';
 // @ts-ignore;
 import { useToast, Button, Card, Input } from '@/components/ui';
+import cnContactOptions from '@/data/cn/contactOptions.js';
 
-// Locale switch (set VITE_LOCALE=US to enable US copy)
-const LOCALE = (import.meta?.env?.VITE_LOCALE || 'CN').toString();
-const isUS = /us/i.test(LOCALE);
+// Fixed locale (separate per-country pages; no i18n)
+const isUS = false;
 const T = (cn, en) => (isUS ? en : cn);
+
 
 export default function Assessment(props) {
   const {
@@ -20,16 +21,13 @@ export default function Assessment(props) {
   } = props.$w.utils;
   const [currentStep, setCurrentStep] = useState(() => {
     // 从本地存储恢复评估状态
-    const savedAssessment = localStorage.getItem('assessment_result');
+    const savedAssessment = localStorage.getItem('assessment_result_cn');
     if (savedAssessment) {
       try {
         const parsed = JSON.parse(savedAssessment);
         // 验证数据结构是否完整
         if (parsed.completed && parsed.currentStep !== undefined) {
-          // 如果评估已完成，确保 currentStep 在有效范围内
-          // 如果 currentStep 超出范围，设置为最后一个问题的索引
-          const maxStep = questions.length - 1;
-          return Math.min(parsed.currentStep, maxStep);
+          return parsed.currentStep;
         }
       } catch (error) {
         console.error('Failed to parse saved assessment:', error);
@@ -39,7 +37,7 @@ export default function Assessment(props) {
   });
   const [answers, setAnswers] = useState(() => {
     // 从本地存储恢复评估状态
-    const savedAssessment = localStorage.getItem('assessment_result');
+    const savedAssessment = localStorage.getItem('assessment_result_cn');
     if (savedAssessment) {
       try {
         const parsed = JSON.parse(savedAssessment);
@@ -55,7 +53,7 @@ export default function Assessment(props) {
   });
   const [riskLevel, setRiskLevel] = useState(() => {
     // 从本地存储恢复评估状态
-    const savedAssessment = localStorage.getItem('assessment_result');
+    const savedAssessment = localStorage.getItem('assessment_result_cn');
     if (savedAssessment) {
       try {
         const parsed = JSON.parse(savedAssessment);
@@ -71,7 +69,7 @@ export default function Assessment(props) {
   });
   const [otherContactMethod, setOtherContactMethod] = useState(() => {
     // 从本地存储恢复评估状态
-    const savedAssessment = localStorage.getItem('assessment_result');
+    const savedAssessment = localStorage.getItem('assessment_result_cn');
     if (savedAssessment) {
       try {
         const parsed = JSON.parse(savedAssessment);
@@ -127,150 +125,9 @@ export default function Assessment(props) {
     title: '催收方式',
     description: '催收方主要通过什么方式联系您？（可多选）',
     multiSelect: true,
-    options: [{
-      value: 'phone',
-      label: '电话',
-      risk: 1,
-      illegal: false,
-      handlingMethod: '1. 保持冷静，不要情绪化回应\n2. 记录通话时间、对方身份、通话内容\n3. 如对方态度恶劣，可要求更换客服人员\n4. 保留通话录音作为证据\n5. 明确告知对方您的还款意愿和困难'
-    }, {
-      value: 'sms',
-      label: '短信',
-      risk: 1,
-      illegal: false,
-      handlingMethod: '1. 保留所有短信截图作为证据\n2. 不要回复含有威胁或侮辱内容的短信\n3. 如短信内容违法，可向运营商投诉\n4. 定期清理短信，避免信息过载\n5. 通过短信与对方保持书面沟通'
-    }, {
-      value: 'visit',
-      label: '上门',
-      risk: 3,
-      illegal: true,
-      law: '《民法典》第1032条：自然人享有隐私权。任何组织或者个人不得以刺探、侵扰、泄露、公开等方式侵害他人的隐私权。\n《商业银行信用卡业务监督管理办法》第70条：在特殊情况下，确认信用卡欠款金额超出持卡人还款能力、且持卡人仍有还款意愿的，发卡银行可以与持卡人平等协商，达成个性化分期还款协议。',
-      lawDetail: '未经同意上门催收可能构成非法侵入住宅或侵犯隐私权，银行应通过合法合规方式与持卡人协商',
-      handlingMethod: '1. 明确拒绝上门催收，要求通过电话或书面方式沟通\n2. 立即联系债权银行官方客服，说明上门催收人员违反了《民法典》关于隐私权的规定，要求更换催收人员或调整催收方式\n3. 保留对方上门的证据（录音、录像），作为与银行沟通的依据\n4. 如对方坚持上门，可报警处理\n5. 如银行不予处理，再向监管部门投诉其违规行为'
-    }, {
-      value: 'sued',
-      label: '起诉',
-      risk: 3,
-      illegal: false,
-      handlingMethod: '1. 认真阅读起诉状，了解对方诉求\n2. 在法定期限内提交答辩状\n3. 准备相关证据材料\n4. 咨询专业律师，了解法律程序\n5. 积极应诉，维护自身合法权益'
-    }, {
-      value: 'lawyer_letter',
-      label: '律师函',
-      risk: 2,
-      illegal: false,
-      handlingMethod: '1. 认真阅读律师函内容\n2. 核实律师函的真实性（可联系律师事务所确认）\n3. 不要被律师函吓倒，保持冷静\n4. 如有疑问，咨询专业律师\n5. 根据实际情况决定是否回应'
-    }, {
-      value: 'emergency_contact',
-      label: '打紧急联系人电话',
-      risk: 3,
-      illegal: true,
-      law: '《个人信息保护法》第6条：处理个人信息应当具有明确、合理的目的，应当与处理目的直接相关，采取对个人权益影响最小的方式。\n《商业银行信用卡业务监督管理办法》第68条：发卡银行应当对债务人信息保密，不得泄露给第三方。',
-      lawDetail: '未经授权联系紧急联系人属于侵犯个人信息权益，银行有义务保护债务人信息',
-      handlingMethod: '1. 明确告知对方未经授权联系紧急联系人违法，违反了《个人信息保护法》\n2. 立即联系债权银行官方客服，说明催收人员违反了信息保护规定，要求立即停止联系紧急联系人\n3. 保留通话记录和短信截图作为证据，作为与银行沟通的依据\n4. 如银行不予处理，再向银保监会等监管部门投诉\n5. 如造成严重后果，可向法院起诉'
-    }, {
-      value: 'wechat_private',
-      label: '强烈要求加微信/私下沟通',
-      risk: 2,
-      illegal: true,
-      law: '《互联网金融逾期债务催收自律公约》第18条：催收人员不得诱导或逼迫债务人通过违法违规途径筹集资金。\n《商业银行信用卡业务监督管理办法》第70条：发卡银行可以与持卡人平等协商，达成个性化分期还款协议。',
-      lawDetail: '要求私下沟通可能涉及不当要求或诱导违规行为，银行应通过官方渠道与持卡人协商',
-      handlingMethod: '1. 拒绝添加微信，坚持通过银行官方客服热线或官网渠道沟通\n2. 保留对方要求私下沟通的聊天记录，作为证据\n3. 立即联系债权银行官方客服，说明催收人员要求私下沟通违反了行业自律规范，要求更换催收人员\n4. 警惕对方可能提出的不当要求，不要向非官方渠道转账\n5. 如对方持续骚扰，再向监管部门投诉'
-    }, {
-      value: 'non_working_hours',
-      label: '非工时间联系',
-      risk: 2,
-      illegal: true,
-      law: '《互联网金融逾期债务催收自律公约》第16条：催收人员应在每日8:00-22:00进行催收，不得在非工作时间进行催收。\n《商业银行信用卡业务监督管理办法》第70条：发卡银行可以与持卡人平等协商，达成个性化分期还款协议。',
-      lawDetail: '非工作时间（晚22:00-早8:00）催收违反行业自律规范，银行应通过合规方式与持卡人沟通',
-      handlingMethod: '1. 明确告知对方非工作时间联系违规，违反了《互联网金融逾期债务催收自律公约》第16条\n2. 要求对方只在工作时间联系\n3. 保留非工作时间联系的通话记录\n4. 立即联系债权银行官方客服，说明催收人员在非工作时间联系，要求更换催收人员或调整催收时间\n5. 如银行不予处理，再向监管部门投诉其违规行为'
-    }, {
-      value: 'auto_robot',
-      label: '自动语音与机器人外呼',
-      risk: 2,
-      illegal: true,
-      law: '《个人信息保护法》第24条：通过自动化决策方式向个人进行信息推送、营销，应当提供不针对其个人特征的选项或提供便捷的拒绝方式。\n《互联网金融逾期债务催收自律公约》第15条：催收人员应当使用文明用语，不得使用侮辱、诽谤、威胁、恐吓等语言。',
-      lawDetail: '未经同意的自动外呼可能侵犯个人信息权益，银行应通过人工客服与持卡人沟通',
-      handlingMethod: '1. 明确拒绝自动外呼，要求人工客服沟通\n2. 保留自动外呼的录音证据\n3. 立即联系债权银行官方客服，说明使用自动外呼违反了《个人信息保护法》，要求更换为人工客服\n4. 向运营商投诉骚扰电话\n5. 如银行不予处理，再向监管部门投诉其违规使用自动化催收'
-    }, {
-      value: 'high_frequency',
-      label: '高频电话轰炸',
-      risk: 3,
-      illegal: true,
-      law: '《治安管理处罚法》第42条：多次发送淫秽、侮辱、恐吓或者其他信息，干扰他人正常生活的，处五日以下拘留或者五百元以下罚款。\n《互联网金融逾期债务催收自律公约》第17条：催收人员不得频繁骚扰债务人及其联系人，不得在同一日多次联系。',
-      lawDetail: '高频骚扰电话可能构成违法行为，违反了行业自律规范',
-      handlingMethod: '1. 保留所有骚扰电话的通话记录和录音\n2. 明确告知对方停止骚扰行为，说明高频电话违反了《治安管理处罚法》第42条和《互联网金融逾期债务催收自律公约》第17条\n3. 立即联系债权银行官方客服，说明催收人员高频电话轰炸，要求更换催收人员或调整催收频率\n4. 如银行不予处理，再向公安机关报案和监管部门投诉\n5. 如造成严重精神损害，可向法院起诉索赔'
-    }, {
-      value: 'third_party',
-      label: '第三方（亲友、单位）',
-      risk: 3,
-      illegal: true,
-      law: '《个人信息保护法》第6条：处理个人信息应当具有明确、合理的目的，应当与处理目的直接相关。\n《商业银行信用卡业务监督管理办法》第68条：发卡银行应当对债务人信息保密，不得泄露给第三方。',
-      lawDetail: '未经授权向第三方泄露债务信息属于侵犯个人信息权益，银行有义务保护债务人信息',
-      handlingMethod: '1. 明确告知对方未经授权向第三方泄露信息违法，违反了《个人信息保护法》和《商业银行信用卡业务监督管理办法》\n2. 要求对方立即停止联系第三方\n3. 保留对方联系第三方的证据\n4. 立即联系债权银行官方客服，说明催收人员向第三方泄露信息，要求立即停止并更换催收人员\n5. 如银行不予处理，再向监管部门投诉其侵犯个人信息\n6. 如造成名誉损害，可向法院起诉'
-    }, {
-      value: 'threat',
-      label: '威胁或恐吓',
-      risk: 3,
-      illegal: true,
-      law: '《刑法》第293条：有下列寻衅滋事行为之一，破坏社会秩序的，处五年以下有期徒刑、拘役或者管制：（二）追逐、拦截、辱骂、恐吓他人。\n《互联网金融逾期债务催收自律公约》第15条：催收人员应当使用文明用语，不得使用侮辱、诽谤、威胁、恐吓等语言。',
-      lawDetail: '威胁或恐吓可能构成寻衅滋事罪或其他违法犯罪行为，违反了行业自律规范',
-      handlingMethod: '1. 立即保留威胁或恐吓的证据（录音、短信、聊天记录）\n2. 立即联系债权银行官方客服，说明催收人员使用威胁或恐吓语言，违反了《刑法》第293条和《互联网金融逾期债务催收自律公约》第15条，要求立即更换催收人员\n3. 如银行不予处理，再向公安机关报案，可能构成寻衅滋事罪\n4. 向监管部门投诉\n5. 咨询专业律师，了解刑事和民事维权途径\n6. 如人身安全受到威胁，立即报警并寻求保护'
-    }, {
-      value: 'fake_police',
-      label: '冒充公检法',
-      risk: 3,
-      illegal: true,
-      law: '《刑法》第279条：冒充国家机关工作人员招摇撞骗的，处三年以下有期徒刑、拘役、管制或者剥夺政治权利；情节严重的，处三年以上十年以下有期徒刑。\n《商业银行信用卡业务监督管理办法》第70条：发卡银行可以与持卡人平等协商，达成个性化分期还款协议。',
-      lawDetail: '冒充公安、检察院、法院等国家机关工作人员进行催收属于严重违法犯罪行为，银行应通过合法合规方式与持卡人沟通',
-      handlingMethod: '1. 立即保留对方冒充公检法的证据（录音、短信、聊天记录）\n2. 立即联系债权银行官方客服，说明催收人员冒充公检法，违反了《刑法》第279条，要求立即更换催收人员\n3. 如银行不予处理，再向公安机关报案，可能构成招摇撞骗罪\n4. 向银保监会等监管部门投诉\n5. 咨询专业律师，了解刑事和民事维权途径\n6. 不要向对方转账或提供任何个人信息'
-    }, {
-      value: 'unofficial_payment',
-      label: '非官方收款',
-      risk: 3,
-      illegal: true,
-      law: '《刑法》第266条：诈骗公私财物，数额较大的，处三年以下有期徒刑、拘役或者管制，并处或者单处罚金。\n《商业银行信用卡业务监督管理办法》第70条：发卡银行可以与持卡人平等协商，达成个性化分期还款协议。',
-      lawDetail: '要求向非官方账户还款可能构成诈骗或非法集资，银行应通过官方渠道收取还款',
-      handlingMethod: '1. 立即停止向非官方账户转账\n2. 保留对方要求非官方收款的证据\n3. 立即联系债权银行官方客服，说明催收人员要求向非官方账户还款，违反了《刑法》第266条，要求立即更换催收人员\n4. 如银行不予处理，再向公安机关报案，可能构成诈骗罪\n5. 向监管部门投诉\n6. 只通过银行官方渠道还款'
-    }, {
-      value: 'third_party_outsource',
-      label: '第三方外包催促',
-      risk: 3,
-      illegal: true,
-      law: '《个人信息保护法》第21条：个人信息处理者委托处理个人信息的，应当与受托人约定委托处理的目的、期限、处理方式、个人信息的种类、保护措施以及双方的权利和义务。',
-      lawDetail: '未经授权将债务信息外包给第三方催收可能侵犯个人信息权益',
-      handlingMethod: '1. 明确告知对方未经授权外包催收违法\n2. 要求对方停止第三方催收行为\n3. 保留第三方催收的证据\n4. 向监管部门投诉其违规外包\n5. 如造成名誉损害，可向法院起诉'
-    }, {
-      value: 'frequent_change',
-      label: '频繁更换号码/平台',
-      risk: 3,
-      illegal: true,
-      law: '《互联网金融逾期债务催收自律公约》第14条：催收人员不得频繁更换联系方式或平台进行骚扰。',
-      lawDetail: '频繁更换号码或平台进行催收属于逃避监管和持续骚扰行为',
-      handlingMethod: '1. 保留所有不同号码和平台的催收记录\n2. 明确告知对方频繁更换联系方式违规\n3. 向监管部门投诉其逃避监管行为\n4. 如造成严重骚扰，可向公安机关报案\n5. 咨询律师，了解维权途径'
-    }, {
-      value: 'request_personal_info',
-      label: '索要个人信息',
-      risk: 3,
-      illegal: true,
-      law: '《个人信息保护法》第5条：处理个人信息应当遵循合法、正当、必要和诚信原则，不得通过误导、欺诈、胁迫等方式处理个人信息。',
-      lawDetail: '催收过程中索要与债务无关的个人信息属于侵犯个人信息权益',
-      handlingMethod: '1. 明确拒绝提供与债务无关的个人信息\n2. 要求对方说明索要信息的合法依据\n3. 保留对方索要个人信息的证据（录音、聊天记录）\n4. 向监管部门投诉其侵犯个人信息\n5. 如对方持续骚扰，可向公安机关报案'
-    }, {
-      value: 'private_phone',
-      label: '私人电话联系',
-      risk: 2,
-      illegal: true,
-      law: '《互联网金融逾期债务催收自律公约》第13条：催收人员应当使用合法合规的联系方式进行催收，不得使用非官方或私人联系方式。\n《商业银行信用卡业务监督管理办法》第68条：发卡银行应当对债务人信息保密，不得泄露给第三方。',
-      lawDetail: '使用私人电话号码进行催收可能涉及信息泄露或违规外包，银行应通过官方渠道与持卡人沟通',
-      handlingMethod: '1. 明确要求对方使用官方座机号码或银行官方客服热线联系\n2. 保留私人电话号码的通话记录和录音作为证据\n3. 立即联系债权银行官方客服，说明催收人员使用私人电话联系，要求更换为官方渠道\n4. 警惕私人电话可能涉及诈骗或违规外包，不要向私人账户转账\n5. 如对方持续使用私人电话骚扰，向监管部门投诉其违规行为'
-    }, {
-      value: 'other',
-      label: '其他',
-      risk: 2,
-      illegal: false,
-      handlingMethod: '1. 详细记录对方的催收方式\n2. 保留相关证据\n3. 咨询专业人士了解应对方法\n4. 如对方行为违法，及时投诉或报案'
-    }]
+    options: cnContactOptions
   }, {
+
     id: 'debt_amount',
     title: '负债金额',
     description: '您的总负债金额大约是多少？',
@@ -656,6 +513,16 @@ const localizeToUS = (qs) =>
 
   const questions = isUS ? localizeToUS(baseQuestions) : baseQuestions;
 
+  React.useEffect(() => {
+    // Clamp currentStep to valid range once questions are available
+    setCurrentStep((prev) => {
+      const max = Math.max(0, (questions?.length || 1) - 1);
+      if (typeof prev !== 'number' || Number.isNaN(prev)) return 0;
+      return Math.min(Math.max(prev, 0), max);
+    });
+  }, []);
+
+
   const calculateRisk = async () => {
     const totalRisk = Object.values(answers).reduce((sum, answer) => sum + answer.risk, 0);
     const maxRisk = questions.length * 3;
@@ -687,7 +554,7 @@ const localizeToUS = (qs) =>
       });
     }
 
-    // 保存{T('评估结果','Assessment result')}到本地存储
+    // 保存{'评估结果'}到本地存储
     const assessmentResult = {
       level,
       percentage: riskPercentage,
@@ -698,7 +565,7 @@ const localizeToUS = (qs) =>
       answers,
       otherContactMethod
     };
-    localStorage.setItem('assessment_result', JSON.stringify(assessmentResult));
+    localStorage.setItem('assessment_result_cn', JSON.stringify(assessmentResult));
     setRiskLevel({
       level,
       percentage: riskPercentage,
@@ -853,7 +720,7 @@ const localizeToUS = (qs) =>
       // 去重并限制建议数量，确保 suggestions 是数组
       const uniqueSuggestions = Array.isArray(allSuggestions) ? [...new Set(allSuggestions)].slice(0, 12) : [];
 
-      // 根据风险等级{T('返回','Back')}对应信息
+      // 根据风险等级{'返回'}对应信息
       const riskInfoMap = {
         low: {
           color: '#10B981',
@@ -890,12 +757,12 @@ const localizeToUS = (qs) =>
           <div className="flex items-center gap-2 md:gap-3">
             <button onClick={navigateBack} className="flex items-center gap-2 hover:bg-white/10 px-2 md:px-3 py-2 rounded-lg transition-colors">
               <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
-              <span className="text-sm md:text-base">{T('返回','Back')}</span>
+              <span className="text-sm md:text-base">{'返回'}</span>
             </button>
           </div>
           <div className="flex items-center gap-2 md:gap-3">
             <Shield className="w-6 h-6 md:w-8 md:h-8 text-[#F59E0B]" />
-            <span className="text-lg md:text-xl font-bold font-['Space_Grotesk']">{T('风险评估','Risk assessment')}</span>
+            <span onClick={() => navigateTo({ pageId: 'cn/home' })} role="button" tabIndex={0} className="text-lg md:text-xl font-bold font-['Space_Grotesk'] hover:opacity-80 cursor-pointer">{'风险评估'}</span>
           </div>
           <div className="w-12 md:w-20"></div>
         </div>
@@ -928,7 +795,7 @@ const localizeToUS = (qs) =>
             const safeCurrentStep = currentStep >= 0 && currentStep < questions.length ? currentStep : 0;
             const currentQuestion = questions[safeCurrentStep];
             if (!currentQuestion) {
-              return <div className="text-center py-8">{T('加载中...','Loading...')}</div>;
+              return <div className="text-center py-8">{'加载中...'}</div>;
             }
             return <>
                   <div className="mb-4 md:mb-8">
@@ -967,7 +834,7 @@ const localizeToUS = (qs) =>
                       <label className="block text-xs md:text-sm font-medium text-[#1E3A5F] mb-2">
                         请具体说明其他催收方式
                       </label>
-                      <Input value={otherContactMethod} onChange={e => setOtherContactMethod(e.target.value)} placeholder={T("例如：通过社交媒体联系、发送邮件等","e.g., social media message, email, etc.")} className="w-full text-xs md:text-sm" />
+                      <Input value={otherContactMethod} onChange={e => setOtherContactMethod(e.target.value)} placeholder={"例如：通过社交媒体联系、发送邮件等"} className="w-full text-xs md:text-sm" />
                     </div>;
                 }
                 return null;
@@ -979,13 +846,14 @@ const localizeToUS = (qs) =>
                   上一题
                 </Button>
                 <Button onClick={handleNext} className="bg-[#1E3A5F] hover:bg-[#0F2744] px-4 md:px-6 text-xs md:text-sm">
-                  {currentStep === questions.length - 1 ? T('查看结果','View results') : T('下一项','Next')}
+                  {currentStep === questions.length - 1 ? '查看结果' : '下一项'}
                   <ChevronRight className="w-3 h-3 md:w-4 md:h-4 ml-2" />
                 </Button>
               </div>
                 </>;
           })()}
-            </Card>
+            <p className="text-xs text-[#64748B] mt-4">本结果基于你本次选择生成，仅用于风险提示，不构成法律意见。</p>
+              </Card>
           </> : <>
             {/* Risk Result */}
             <Card className="bg-white rounded-2xl p-4 md:p-8 shadow-xl">
@@ -994,9 +862,9 @@ const localizeToUS = (qs) =>
             const defaultRiskInfo = {
               color: '#64748B',
               icon: Info,
-              title: T('评估结果','Assessment result'),
-              description: T('无法加载评估结果','Unable to load assessment result'),
-              suggestions: [T('请重新完成评估','Please complete the assessment again')]
+              title: '评估结果',
+              description: '无法加载评估结果',
+              suggestions: ['请重新完成评估']
             };
             let riskInfo = defaultRiskInfo;
             if (riskLevel && riskLevel.level && answers) {
@@ -1037,7 +905,7 @@ const localizeToUS = (qs) =>
                     {/* Risk Score */}
                     <div className="bg-slate-50 rounded-xl p-4 md:p-6 mb-6 md:mb-8">
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs md:text-sm text-[#64748B]">{T('风险评分','Risk Score')}</span>
+                        <span className="text-xs md:text-sm text-[#64748B]">{'风险评分'}</span>
                         <span className="text-xl md:text-2xl font-bold font-['Space_Grotesk'] text-[#1E3A5F]">
                           {safeRiskLevel.totalRisk} / {questions.length * 3}
                         </span>
@@ -1053,7 +921,7 @@ const localizeToUS = (qs) =>
                     {/* Suggestions */}
                     <div className="mb-6 md:mb-8">
                       <h3 className="text-lg md:text-xl font-bold font-['Space_Grotesk'] text-[#1E3A5F] mb-3 md:mb-4">
-                        {T('建议措施','Recommended actions')}
+                        {'建议措施'}
                       </h3>
                       <div className="space-y-2 md:space-y-3">
                         {Array.isArray(riskInfo.suggestions) && riskInfo.suggestions.map((suggestion, index) => <div key={index} className="flex items-start gap-2 md:gap-3">
@@ -1092,12 +960,13 @@ const localizeToUS = (qs) =>
                               </div>
                             </div>)}
                         </div>
-                        <Button onClick={() => navigateTo({
-                  pageId: 'illegal-collection',
-                  params: {
-                    illegalBehaviors: encodeURIComponent(JSON.stringify(riskLevel.illegalBehaviors))
-                  }
-                })} className="w-full bg-red-600 hover:bg-red-700 text-white text-xs md:text-sm">
+                        <Button onClick={() => {
+                  try {
+                    sessionStorage.setItem('illegal_behaviors_cn_current', JSON.stringify(riskLevel.illegalBehaviors || []));
+                    sessionStorage.setItem('illegal_behaviors_cn_ts', String(Date.now()));
+                  } catch {}
+                  navigateTo({ pageId: 'cn/illegal-collection' });
+                }} className="w-full bg-red-600 hover:bg-red-700 text-white text-xs md:text-sm">
                           查看违法催收行为详情
                           <ChevronRight className="w-3 h-3 md:w-4 md:h-4 ml-2" />
                         </Button>
@@ -1117,7 +986,7 @@ const localizeToUS = (qs) =>
                         </div>
                       </div>
                       <Button onClick={() => navigateTo({
-                  pageId: 'risk-warning'
+                  pageId: 'cn/risk-warning'
                 })} className="w-full bg-amber-600 hover:bg-amber-700 text-white text-xs md:text-sm">
                           查看风险提示详情
                           <ChevronRight className="w-3 h-3 md:w-4 md:h-4 ml-2" />
@@ -1127,8 +996,8 @@ const localizeToUS = (qs) =>
                     {/* Action Buttons */}
                     <div className="flex gap-3 md:gap-4">
                       <Button onClick={() => {
-                  // 清除本地存储的{T('评估结果','Assessment result')}
-                  localStorage.removeItem('assessment_result');
+                  // 清除本地存储的{'评估结果'}
+                  localStorage.removeItem('assessment_result_cn');
                   // 重置所有状态
                   setCurrentStep(0);
                   setAnswers({});
@@ -1143,7 +1012,7 @@ const localizeToUS = (qs) =>
                         重新评估
                       </Button>
                       <Button onClick={() => navigateTo({
-                  pageId: 'solutions',
+                  pageId: 'cn/solutions',
                   params: {
                     riskLevel: riskLevel ? riskLevel.level : 'low'
                   }

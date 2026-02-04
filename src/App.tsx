@@ -15,8 +15,9 @@ import { routers } from "./configs/routers";
 import { createBrowserHistory } from "history";
 
 const history = createBrowserHistory();
+// @ts-ignore
 window._WEAPPS_HISTORY = history;
-// Create a client
+
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
@@ -28,6 +29,7 @@ const App: React.FC = () => {
           <Sonner position="top-center" />
           <BrowserRouter history={history}>
             <Routes>
+              {/* Default root: go to configured home route */}
               <Route
                 path="/"
                 element={
@@ -39,6 +41,12 @@ const App: React.FC = () => {
                   />
                 }
               />
+
+              {/* Country entry shortcuts */}
+              <Route path="/us" element={<Navigate to="/us/home" replace />} />
+              <Route path="/cn" element={<Navigate to="/cn/home" replace />} />
+
+              {/* Actual pages */}
               {routers.map((item) => {
                 return (
                   <Route
