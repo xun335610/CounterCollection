@@ -1467,9 +1467,11 @@ export default function Knowledge(props) {
                   </span>}
               </div>
               <Button variant="outline" className="w-full group text-xs sm:text-sm py-2 sm:py-2.5" onClick={() => {
-            toast({
-              title: item.title,
-              description: item.content.substring(0, 100) + '...'
+            navigateTo({
+              pageId: 'knowledge-detail',
+              params: {
+                id: item.id
+              }
             });
           }}>
                 查看详情

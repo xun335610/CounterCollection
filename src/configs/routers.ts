@@ -4,6 +4,7 @@ import SOLUTIONS from '../pages/solutions.jsx';
 import KNOWLEDGE from '../pages/knowledge.jsx';
 import ILLEGAL_COLLECTION from '../pages/illegal-collection.jsx';
 import RISK_WARNING from '../pages/risk-warning.jsx';
+import KNOWLEDGE_DETAIL from '../pages/knowledge-detail.jsx';
 export const routers = [{
                 id: "home",
                 component: HOME
@@ -22,4 +23,7 @@ export const routers = [{
               }, {
                 id: "risk-warning",
                 component: RISK_WARNING
+              }, {
+                id: "knowledge-detail",
+                component: KNOWLEDGE_DETAIL
               }]
