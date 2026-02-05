@@ -10,7 +10,6 @@ import usContactOptions from '@/data/us/contactOptions.js';
 const isUS = true;
 const T = (cn, en) => (isUS ? en : cn);
 
-
 export default function Assessment(props) {
   const {
     toast
