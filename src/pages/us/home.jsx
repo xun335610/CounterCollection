@@ -1,5 +1,6 @@
 // @ts-ignore;
-import React, { useState } from 'react';
+// @ts-ignore
+import UsNav from '@/components/us/UsNav';
 // @ts-ignore;
 import { Shield, AlertTriangle, FileText, Scale, ArrowRight } from 'lucide-react';
 // @ts-ignore;
@@ -58,7 +59,9 @@ export default function Home(props) {
                 Practical, low-conflict guidance for dealing with debt collection. We help you document, respond calmly, and reduce risk.
                 Not legal advice. For legal advice, consult a licensed attorney.
               </p>
-              <button onClick={() => handleNavigate('us/assessment')} className="bg-[#F59E0B] hover:bg-[#D97706] text-white px-6 md:px-8 py-3 md:py-4 rounded-lg font-semibold text-base md:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2 md:gap-3">
+              <button onClick={() => handleNavigate('us/assessment', {
+              forceNew: true
+            })} className="bg-[#F59E0B] hover:bg-[#D97706] text-white px-6 md:px-8 py-3 md:py-4 rounded-lg font-semibold text-base md:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2 md:gap-3">
                 Start Risk Assessment
                 <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
               </button>
@@ -85,7 +88,9 @@ export default function Home(props) {
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {/* Feature 1 */}
-            <div onClick={() => handleNavigate('us/assessment')} className="bg-white rounded-xl p-4 md:p-6 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer border-l-4 border-[#F59E0B] hover:-translate-y-2">
+            <div onClick={() => handleNavigate('us/assessment', {
+            forceNew: true
+          })} className="bg-white rounded-xl p-4 md:p-6 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer border-l-4 border-[#F59E0B] hover:-translate-y-2">
               <div className="bg-[#F59E0B]/10 w-12 h-12 md:w-14 md:h-14 rounded-lg flex items-center justify-center mb-3 md:mb-4">
                 <AlertTriangle className="w-6 h-6 md:w-7 md:h-7 text-[#F59E0B]" />
               </div>
@@ -177,7 +182,15 @@ export default function Home(props) {
         <p>This tool is a free public risk-awareness resource to help identify potentially improper debt-collection practices.</p>
         <p className="mt-1">It is free to use and does not require payment or registration. Information provided is general only and not legal advice.</p>
         <p className="mt-1">The project may receive transparent institutional or public-interest support without affecting content independence or using user data.</p>
-        <p className="mt-1">This tool does not store or track individual assessment results.</p>
+        <p className="mt-1">
+          Assessment results are stored locally in your browser to support navigation and refresh. By default we use session storage (cleared when you close the tab).
+          If you enable “Remember my results”, we store results in local storage with a 7‑day expiration.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button onClick={() => handleNavigate('us/disclaimer')} className="underline">Disclaimer</button>
+          <button onClick={() => handleNavigate('us/privacy')} className="underline">Privacy</button>
+          <button onClick={() => handleNavigate('us/state-laws')} className="underline">State rules</button>
+        </div>
       </footer>
     
     </main>

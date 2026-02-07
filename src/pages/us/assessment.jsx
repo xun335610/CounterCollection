@@ -1,9 +1,12 @@
 // @ts-ignore;
-import React, { useState } from 'react';
+// @ts-ignore
+import UsNav from '@/components/us/UsNav';
+import { useEffect, useState } from 'react';
 // @ts-ignore;
 import { ArrowLeft, AlertTriangle, Shield, CheckCircle, XCircle, ChevronRight, Plus, Scale, FileText, AlertCircle, Info } from 'lucide-react';
 // @ts-ignore;
-import { useToast, Button, Card, Input } from '@/components/ui';
+import { useToast, Button, Card, Input, Switch } from '@/components/ui';
+import { getAssessmentResult, setAssessmentResult, removeAssessmentResult } from '@/utils/assessmentStorage';
 import usContactOptions from '@/data/us/contactOptions.js';
 
 // Fixed locale (separate per-country pages; no i18n)
@@ -18,71 +21,60 @@ export default function Assessment(props) {
     navigateTo,
     navigateBack
   } = props.$w.utils;
+  const pageParams = props.$w?.page?.dataset?.params || {};
+  const forceNew = pageParams?.forceNew === true || pageParams?.forceNew === 'true';
+  // Safe, backward-compatible read (session-first; optional local TTL)
+  const savedAssessment = forceNew ? null : getAssessmentResult('assessment_result_us');
   const [currentStep, setCurrentStep] = useState(() => {
-    // 从本地存储恢复评估状态
-    const savedAssessment = localStorage.getItem('assessment_result_us');
-    if (savedAssessment) {
-      try {
-        const parsed = JSON.parse(savedAssessment);
-        // 验证数据结构是否完整
-        if (parsed.completed && parsed.currentStep !== undefined) {
-          return parsed.currentStep;
-        }
-      } catch (error) {
-        console.error('Failed to parse saved assessment:', error);
-      }
+    if (savedAssessment && savedAssessment.completed && savedAssessment.currentStep !== undefined) {
+      return savedAssessment.currentStep;
     }
     return 0;
   });
   const [answers, setAnswers] = useState(() => {
-    // 从本地存储恢复评估状态
-    const savedAssessment = localStorage.getItem('assessment_result_us');
-    if (savedAssessment) {
-      try {
-        const parsed = JSON.parse(savedAssessment);
-        // 验证数据结构是否完整
-        if (parsed.completed && parsed.answers) {
-          return parsed.answers;
-        }
-      } catch (error) {
-        console.error('Failed to parse saved assessment:', error);
-      }
+    if (savedAssessment && savedAssessment.completed && savedAssessment.answers) {
+      return savedAssessment.answers;
     }
     return {};
   });
   const [riskLevel, setRiskLevel] = useState(() => {
-    // 从本地存储恢复评估状态
-    const savedAssessment = localStorage.getItem('assessment_result_us');
-    if (savedAssessment) {
-      try {
-        const parsed = JSON.parse(savedAssessment);
-        // 验证数据结构是否完整
-        if (parsed.completed && parsed.riskLevel && parsed.riskLevel.level) {
-          return parsed.riskLevel;
-        }
-      } catch (error) {
-        console.error('Failed to parse saved assessment:', error);
-      }
+    if (savedAssessment && savedAssessment.completed && savedAssessment.riskLevel && savedAssessment.riskLevel.level) {
+      return savedAssessment.riskLevel;
     }
     return null;
   });
   const [otherContactMethod, setOtherContactMethod] = useState(() => {
-    // 从本地存储恢复评估状态
-    const savedAssessment = localStorage.getItem('assessment_result_us');
-    if (savedAssessment) {
-      try {
-        const parsed = JSON.parse(savedAssessment);
-        // 验证数据结构是否完整
-        if (parsed.completed && parsed.otherContactMethod !== undefined) {
-          return parsed.otherContactMethod;
-        }
-      } catch (error) {
-        console.error('Failed to parse saved assessment:', error);
-      }
+    if (savedAssessment && savedAssessment.completed && savedAssessment.otherContactMethod !== undefined) {
+      return savedAssessment.otherContactMethod;
     }
     return '';
   });
+  const [rememberResults, setRememberResults] = useState(() => {
+    if (savedAssessment && savedAssessment.completed && savedAssessment.rememberResults !== undefined) {
+      return !!savedAssessment.rememberResults;
+    }
+    return false;
+  });
   const baseQuestions = [{
+    id: 'state',
+    title: 'State',
+    description: 'Select your state (optional)',
+    options: [
+      { value: 'NA', label: "Not sure / Prefer not to say", risk: 0 },
+      { value: 'CA', label: 'California', risk: 0 },
+      { value: 'NY', label: 'New York', risk: 0 },
+      { value: 'TX', label: 'Texas', risk: 0 },
+      { value: 'FL', label: 'Florida', risk: 0 },
+      { value: 'IL', label: 'Illinois', risk: 0 },
+      { value: 'WA', label: 'Washington', risk: 0 },
+      { value: 'NJ', label: 'New Jersey', risk: 0 },
+      { value: 'GA', label: 'Georgia', risk: 0 },
+      { value: 'PA', label: 'Pennsylvania', risk: 0 },
+      { value: 'OH', label: 'Ohio', risk: 0 },
+      { value: 'NC', label: 'North Carolina', risk: 0 },
+      { value: 'MI', label: 'Michigan', risk: 0 }
+    ]
+  },{
     id: 'occupation',
     title: 'Occupation',
     description: 'Select your occupation',
@@ -298,6 +290,7 @@ export default function Assessment(props) {
 
 // --- US localization (keeps ALL options/flows; only swaps copy + guidance) ---
 const usQuestionCopy = {
+  state: { title: 'State', description: 'Select your state (optional)' },
   occupation: { title: 'Occupation', description: 'Select your occupation' },
   contact_method: { title: 'Collection methods', description: 'How are they contacting you? (Select all that apply)' },
   debt_amount: { title: 'Total debt amount', description: 'Roughly how much total debt do you have?' },
@@ -545,7 +538,10 @@ const localizeToUS = (qs) =>
   });
 const questions = isUS ? localizeToUS(baseQuestions) : baseQuestions;
 
-  React.useEffect(() => {
+  useEffect(() => {
+    if (forceNew) {
+      removeAssessmentResult('assessment_result_us');
+    }
     // Clamp currentStep to valid range once questions are available
     setCurrentStep((prev) => {
       const max = Math.max(0, (questions?.length || 1) - 1);
@@ -556,8 +552,9 @@ const questions = isUS ? localizeToUS(baseQuestions) : baseQuestions;
 
 
   const calculateRisk = async () => {
-    const totalRisk = Object.values(answers).reduce((sum, answer) => sum + answer.risk, 0);
-    const maxRisk = questions.length * 3;
+    const scoredQuestions = questions.filter((q) => q.id !== 'state');
+    const totalRisk = scoredQuestions.reduce((sum, q) => sum + (answers[q.id]?.risk || 0), 0);
+    const maxRisk = scoredQuestions.length * 3;
     const riskPercentage = totalRisk / maxRisk * 100;
     let level;
     if (riskPercentage <= 33) {
@@ -595,9 +592,11 @@ const questions = isUS ? localizeToUS(baseQuestions) : baseQuestions;
       completed: true,
       currentStep: questions.length,
       answers,
-      otherContactMethod
+      otherContactMethod,
+      state: answers['state']?.value || 'NA',
+      rememberResults
     };
-    localStorage.setItem('assessment_result_us', JSON.stringify(assessmentResult));
+    setAssessmentResult('assessment_result_us', assessmentResult, { remember: rememberResults, ttlDays: 7 });
     setRiskLevel({
       level,
       percentage: riskPercentage,
@@ -1027,15 +1026,37 @@ const questions = isUS ? localizeToUS(baseQuestions) : baseQuestions;
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex gap-3 md:gap-4">
+                    
+{/* Remember toggle (optional) */}
+<div className="mb-4">
+  <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-3">
+    <div>
+      <div className="text-sm font-medium text-[#1E3A5F]">Remember my results</div>
+      <div className="text-xs text-slate-500">Store on this device for 7 days (optional)</div>
+    </div>
+    <Switch
+      checked={rememberResults}
+      onCheckedChange={(v) => {
+        const next = !!v;
+        setRememberResults(next);
+        const current = getAssessmentResult('assessment_result_us');
+        if (current && current.completed) {
+          setAssessmentResult('assessment_result_us', { ...current, rememberResults: next }, { remember: next, ttlDays: 7 });
+        }
+      }}
+    />
+  </div>
+</div>
+<div className="flex gap-3 md:gap-4">
                       <Button onClick={() => {
                   // 清除本地存储的{'Assessment result'}
-                  localStorage.removeItem('assessment_result_us');
+                  removeAssessmentResult('assessment_result_us');
                   // 重置所有状态
                   setCurrentStep(0);
                   setAnswers({});
                   setRiskLevel(null);
                   setOtherContactMethod('');
+                  setRememberResults(false);
                   // 显示成功提示
                   toast({
                     title: 'Assessment reset',

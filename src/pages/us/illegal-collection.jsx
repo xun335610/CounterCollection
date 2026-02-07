@@ -1,5 +1,7 @@
 // @ts-ignore;
-import React from 'react';
+// @ts-ignore
+import UsNav from '@/components/us/UsNav';
+import { getAssessmentResult } from '@/utils/assessmentStorage';
 // @ts-ignore;
 import { ArrowLeft, Scale, FileText, AlertTriangle, AlertCircle, Info, Shield } from 'lucide-react';
 // @ts-ignore;
@@ -34,6 +36,15 @@ export default function IllegalCollection(props) {
       behaviors = [];
     }
   }
+
+  // Fallback: if user refreshes / opens directly, try using the last assessment result
+  const lastAssessment = getAssessmentResult('assessment_result_us');
+  const selectedState = lastAssessment && lastAssessment.state ? String(lastAssessment.state).toUpperCase() : 'NA';
+
+  if ((!behaviors || behaviors.length === 0) && lastAssessment && Array.isArray(lastAssessment.illegalBehaviors)) {
+    behaviors = lastAssessment.illegalBehaviors;
+  }
+
 return <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 font-['JetBrains_Mono']">
       {/* Header */}
       <header className="bg-[#1E3A5F] text-white py-3 md:py-4 px-4 md:px-8 shadow-lg">
@@ -68,6 +79,31 @@ return <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100
             </div>
           </div>
         </Card>
+
+{/* State-specific rules link */}
+<Card className="bg-white border border-slate-200 rounded-xl p-4 md:p-6 mb-6 md:mb-8">
+  <div className="flex items-start justify-between gap-3">
+    <div>
+      <h3 className="text-sm md:text-base font-bold text-[#1E3A5F]">State rules</h3>
+      <p className="text-xs md:text-sm text-slate-600 mt-1">
+        {selectedState !== "NA"
+          ? `You selected ${selectedState}. This state may have additional restrictions beyond federal law.`
+          : "Some states add extra restrictions beyond federal law. Select a state to see an overview."}
+      </p>
+    </div>
+    <Button
+      variant="outline"
+      onClick={() =>
+        navigateTo({
+          pageId: selectedState !== "NA" ? `us/state-laws/${selectedState.toLowerCase()}` : "us/state-laws",
+        })
+      }
+    >
+      View
+    </Button>
+  </div>
+</Card>
+
 
         {/* Illegal Behaviors List */}
         <div className="space-y-4 md:space-y-6">
@@ -136,7 +172,6 @@ return <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100
               <li>{'Consider speaking with a qualified attorney or a consumer credit counselor.'}</li>
             </ul>
           </Card>}
-
         {/* Action Buttons */}
         <div className="flex gap-3 md:gap-4 mt-6 md:mt-8">
           <Button onClick={() => (navigateBack ? navigateBack() : window.history.back())} variant="outline" className="flex-1 text-xs md:text-sm">

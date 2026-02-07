@@ -1,5 +1,8 @@
 // @ts-ignore;
-import React, { useState } from 'react';
+// @ts-ignore
+import UsNav from '@/components/us/UsNav';
+import { useState } from 'react';
+import { getAssessmentResult } from '@/utils/assessmentStorage';
 // @ts-ignore;
 import { ArrowLeft, FileText, MessageSquare, ListChecks, ChevronRight, Copy, Check, AlertTriangle } from 'lucide-react';
 // @ts-ignore;
@@ -188,7 +191,8 @@ export default function Solutions(props) {
 
   // 从 localStorage 获取评估结果
   const [assessmentResult, setAssessmentResult] = useState(() => {
-    const savedAssessment = localStorage.getItem('assessment_result_us');
+    const savedAssessmentObj = getAssessmentResult('assessment_result_us');
+  const savedAssessment = savedAssessmentObj ? JSON.stringify(savedAssessmentObj) : null;
     if (savedAssessment) {
       const parsed = JSON.parse(savedAssessment);
       return parsed.completed ? parsed : null;

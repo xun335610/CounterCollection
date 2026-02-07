@@ -4,6 +4,11 @@ import US_SOLUTIONS from '../pages/us/solutions.jsx';
 import US_KNOWLEDGE from '../pages/us/knowledge.jsx';
 import US_ILLEGAL_COLLECTION from '../pages/us/illegal-collection.jsx';
 import US_RISK_WARNING from '../pages/us/risk-warning.jsx';
+import US_STATE_LAWS from '../pages/us/state-laws.jsx';
+import US_STATE_LAW from '../pages/us/state-law.jsx';
+
+import US_DISCLAIMER from '../pages/us/disclaimer.jsx';
+import US_PRIVACY from '../pages/us/privacy.jsx';
 
 import CN_HOME from '../pages/cn/home.jsx';
 import CN_ASSESSMENT from '../pages/cn/assessment.jsx';
@@ -20,6 +25,25 @@ export const routers = [
   { id: "us/knowledge", component: US_KNOWLEDGE },
   { id: "us/illegal-collection", component: US_ILLEGAL_COLLECTION },
   { id: "us/risk-warning", component: US_RISK_WARNING },
+
+  // US: State rules (static routes for PageWrapper stability)
+  { id: "us/state-laws", component: US_STATE_LAWS },
+  { id: "us/state-laws/ca", component: US_STATE_LAW },
+  { id: "us/state-laws/ny", component: US_STATE_LAW },
+  { id: "us/state-laws/tx", component: US_STATE_LAW },
+  { id: "us/state-laws/fl", component: US_STATE_LAW },
+  { id: "us/state-laws/il", component: US_STATE_LAW },
+  { id: "us/state-laws/wa", component: US_STATE_LAW },
+  { id: "us/state-laws/nj", component: US_STATE_LAW },
+  { id: "us/state-laws/ga", component: US_STATE_LAW },
+  { id: "us/state-laws/pa", component: US_STATE_LAW },
+  { id: "us/state-laws/oh", component: US_STATE_LAW },
+  { id: "us/state-laws/nc", component: US_STATE_LAW },
+  { id: "us/state-laws/mi", component: US_STATE_LAW },
+
+  // US: Legal/Privacy
+  { id: "us/disclaimer", component: US_DISCLAIMER },
+  { id: "us/privacy", component: US_PRIVACY },
 
   // China version
   { id: "cn/home", component: CN_HOME },
