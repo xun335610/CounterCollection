@@ -5,6 +5,34 @@ import { _WEDA_CLOUD_SDK as WEDA_CLOUD_SDK } from "@cloudbase/weda-client";
 import querystring from "query-string";
 const { createDataset, EXTRA_API } = WEDA_CLOUD_SDK;
 
+function getPageTitle(id: string) {
+  const APP_NAME = "DebtShield";
+  const titleMap: Record<string, string> = {
+    "us/home": "DebtShield",
+    "us/assessment": "Risk Assessment",
+    "us/solutions": "Solutions",
+    "us/knowledge": "Knowledge",
+    "us/illegal-collection": "Illegal Collection Details",
+    "us/risk-warning": "Risk Warning",
+    "us/state-laws": "State Rules",
+    "us/disclaimer": "Disclaimer",
+    "us/privacy": "Privacy",
+    "cn/home": "债务护盾",
+    "cn/assessment": "风险评估",
+    "cn/solutions": "应对方案",
+    "cn/knowledge": "知识库",
+    "cn/illegal-collection": "违规催收详情",
+    "cn/risk-warning": "风险提示",
+  };
+
+  if (id.startsWith("us/state-laws/")) {
+    return `State Rules - ${APP_NAME}`;
+  }
+
+  const page = titleMap[id] || APP_NAME;
+  return page === APP_NAME ? APP_NAME : `${page} - ${APP_NAME}`;
+}
+
 export function PageWrapper({
   id,
   Page,
@@ -56,6 +84,10 @@ export function PageWrapper({
       }
     };
   }, []);
+
+  React.useEffect(() => {
+    document.title = getPageTitle(id);
+  }, [id]);
 
   return <Page {...props} $w={$page.__internal__.$w || base$W} />;
 }
